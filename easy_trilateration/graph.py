@@ -1,6 +1,5 @@
 import matplotlib.pyplot as plt
 from random import randint
-from matplotlib.animation import FuncAnimation
 from easy_trilateration import model
 import matplotlib
 
@@ -19,21 +18,22 @@ def static(history: [model.Trilateration], actual: [Point] = [], ax=plt.axes()):
             sniffers.add(sniffer.center)
         x_values.append(tri.result.center.x)
         y_values.append(tri.result.center.y)
-        if i % 10 == 0:
-            to_draw.append(create_circle(tri.result))
-        if i == 0:
-            for sniff in sniffers:
-                to_draw.append(create_point(sniff, color="red"))
 
+      #  if i % 20 == 0:
+      #      to_draw.append(create_circle(tri.result, target=True))
+
+    for sniff in sniffers:
+        to_draw.append(create_point(sniff, color="red"))
     actual_x = []
     actual_y = []
-    draw(to_draw)
-    plt.plot(x_values, y_values, color="blue", linewidth=1)
 
-    for act in actual:
-        actual_x.append(act.x)
-        actual_y.append(act.y)
-    plt.plot(actual_x, actual_y, color="green", linewidth=3)
+    #   for act in actual:
+    #      actual_x.append(act.x)
+    #     actual_y.append(act.y)
+
+    # plt.plot(actual_x, actual_y, color="green", linewidth=3)
+    plt.plot(x_values, y_values, color="red", linewidth=1)
+    draw(to_draw)
 
 
 # def animate(history: [model.Trilateration], ax=plt.axes()):
@@ -66,7 +66,7 @@ def create_circle(circle: model.Circle, target=False):
 
 
 def create_point(point: model.Point, color=matplotlib.cm.jet(randint(0, 00))):
-    plt.scatter(int(point.x), int(point.y), color=color, s=100, zorder=2)
+    plt.scatter(float(point.x), float(point.y), color=color, s=100, zorder=2)
 
 
 def add_shape(patch):

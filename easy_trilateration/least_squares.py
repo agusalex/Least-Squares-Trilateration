@@ -1,3 +1,5 @@
+import random
+
 from easy_trilateration.model import *
 from scipy.optimize import least_squares
 
@@ -14,8 +16,13 @@ def solve(trilateration: Trilateration, guess: Circle = Circle(0, 0, 0)) -> Circ
     return result
 
 
-def rssi_to_distance(rssi, C=17, R=38):
-    return 10 ** (-1 * (rssi + C) / R)
+# C=35, R=27 || C=43 N = 32 for latest non-adaptive
+def rssi_to_distance(rssi, C=43, N=32):
+    return (10 ** (-1 * (rssi + C) / N))
+
+
+def lineal_rssi_to_distance(rssi):
+    return 0.48 * (-rssi - 60) # 0.588235 * (-rssi - 60)
 
 
 def easy_least_squares(crls, guess=Circle(0, 0, 0)):
