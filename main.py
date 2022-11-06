@@ -98,7 +98,7 @@ def distance(row_i):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
         description='Trilateration solver and 2D grapher') #cuadrado_diagonal_kalman.csv
-    parser.add_argument('--file', nargs='?', help='data filename', default='resources/01-08/estralla-kalman.csv')
+    parser.add_argument('--file', nargs='?', help='data filename', default='resources/05-10/10-5-nw-filtered.csv')
 
     args = parser.parse_args()
 
@@ -142,7 +142,11 @@ if __name__ == '__main__':
               "offset": "0",
               "C": "0",
               "R": "0"},
-
+"192.168.4.10": {"x": "0",
+                 "y": "5",
+                 "offset": "0",
+                 "C": "0",
+                 "R": "0"},
 "192.168.4.11": {"x": "2.5",
                  "y": "5",
                  "offset": "-2.25",
@@ -162,12 +166,14 @@ if __name__ == '__main__':
     #filtered = filter_outliers_median(1.7, df)
 
     df.sort_values('millis', inplace=True)
+    df['millis'] = df.apply(lambda x: round(x.millis/1000), axis=1)
     millis = df['millis'][0]
     # group_millis = file.groupby['millis']
     group_by_node = df.groupby(['node'])
+
     convert = group_by_node.filter(lambda x: True)
     group_by_millis = convert.groupby(['millis'])
-    group_by_millis_filter = group_by_millis.filter(lambda x: len(pd.unique(x['node'])) >= 7)
+    group_by_millis_filter = group_by_millis.filter(lambda x: len(pd.unique(x['node'])) >= 3)
 
     # actual.append(Point(float(row['target_x']), float(row['target_y'])))
 
