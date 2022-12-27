@@ -6,7 +6,9 @@ import matplotlib
 from easy_trilateration.model import Point
 
 
-def static(history: [model.Trilateration], actual: [Point] = [], ax=plt.axes()):
+def static(history: [model.Trilateration], actual=None, draw_target_circle=False, title="Multilateration"):
+    if actual is None:
+        actual = []
     x_values = []
     y_values = []
 
@@ -18,21 +20,25 @@ def static(history: [model.Trilateration], actual: [Point] = [], ax=plt.axes()):
             sniffers.add(sniffer.center)
         x_values.append(tri.result.center.x)
         y_values.append(tri.result.center.y)
-
-      #  if i % 20 == 0:
-      #      to_draw.append(create_circle(tri.result, target=True))
+    if draw_target_circle:
+        to_draw.append(create_circle(tri.result, target=True))
 
     for sniff in sniffers:
         to_draw.append(create_point(sniff, color="red"))
     actual_x = []
     actual_y = []
 
-    #   for act in actual:
-    #      actual_x.append(act.x)
-    #     actual_y.append(act.y)
+    for x, y in actual:
+        actual_x.append(x)
+        actual_y.append(y)
+    plt.grid()
+    plt.title(title)
+    plt.ylabel("Y Meters")
+    plt.xlabel("X Meters")
+    plt.plot(actual_x, actual_y, color="blue",label='actual', linestyle='-.', linewidth=1)
+    plt.plot(x_values, y_values, color="green",label='predicted',linestyle='dotted', linewidth=2)
+    plt.legend(bbox_to_anchor=(0.84,0.35))
 
-    # plt.plot(actual_x, actual_y, color="green", linewidth=3)
-    plt.plot(x_values, y_values, color="red", linewidth=1)
     draw(to_draw)
 
 

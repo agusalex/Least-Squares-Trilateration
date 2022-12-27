@@ -95,10 +95,14 @@ def distance(row_i):
     return rssi_to_distance(row_i['rssi']) + float(node_location[row['node']]['offset'])
 
 
+def rssi_to_distance(rssi, a=36, n=27):
+    return 10 ** (-1 * (rssi + a) / n)
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
-        description='Trilateration solver and 2D grapher') #cuadrado_diagonal_kalman.csv
-    parser.add_argument('--file', nargs='?', help='data filename', default='resources/05-10/10-5-nw-filtered.csv')
+        description='Trilateration solver and 2D grapher')  # cuadrado_diagonal_kalman.csv
+    parser.add_argument('--file', nargs='?', help='data filename', default='resources/simulation/capture_combined.csv')
 
     args = parser.parse_args()
 
@@ -116,57 +120,57 @@ if __name__ == '__main__':
     #      draws.append(create_point(value))
     #  draw(draws)
     node_location = {
-"192.168.4.3": {"x": "0",
-                "y": "0",
-                "offset": "0",
-                "C": "0",
-                "R": "0"}
-,
-"192.168.4.5": {"x": "2.5",
-                "y": "0",
-                "offset": "2.25",
-                "C": "0",
-                "R": "0"},
-"192.168.4.6": {"x": "5",
-                "y": "0",
-                "offset": "0",
-                "C": "0",
-                "R": "0"},
-"192.168.4.7": {"x": "0",
-                "y": "2.5",
-                "offset": "0.5",
-                "C": "0",
-                "R": "0"},
-"192.168.4.8": {"x": "5",
-              "y": "2.5",
-              "offset": "0",
-              "C": "0",
-              "R": "0"},
-"192.168.4.10": {"x": "0",
-                 "y": "5",
-                 "offset": "0",
-                 "C": "0",
-                 "R": "0"},
-"192.168.4.11": {"x": "2.5",
-                 "y": "5",
-                 "offset": "-2.25",
-                 "C": "0",
-                 "R": "0"},
-"192.168.4.12": {"x": "5",
-                 "y": "5",
-                 "offset": "0",
-                 "C": "0",
-                 "R": "0"}
-                 }
+        "192.168.4.3": {"x": "0",
+                        "y": "0",
+                        "offset": "0",
+                        "C": "0",
+                        "R": "0"}
+        ,
+        "192.168.4.5": {"x": "2.5",
+                        "y": "0",
+                        "offset": "2.25",
+                        "C": "0",
+                        "R": "0"},
+        "192.168.4.6": {"x": "5",
+                        "y": "0",
+                        "offset": "0",
+                        "C": "0",
+                        "R": "0"},
+        "192.168.4.7": {"x": "0",
+                        "y": "2.5",
+                        "offset": "0.5",
+                        "C": "0",
+                        "R": "0"},
+        "192.168.4.8": {"x": "5",
+                        "y": "2.5",
+                        "offset": "0",
+                        "C": "0",
+                        "R": "0"},
+        "192.168.4.10": {"x": "0",
+                         "y": "5",
+                         "offset": "0",
+                         "C": "0",
+                         "R": "0"},
+        "192.168.4.11": {"x": "2.5",
+                         "y": "5",
+                         "offset": "-2.25",
+                         "C": "0",
+                         "R": "0"},
+        "192.168.4.12": {"x": "5",
+                         "y": "5",
+                         "offset": "0",
+                         "C": "0",
+                         "R": "0"}
+    }
 
     actual = []
 
-    #df.sort_values('millis', inplace=True)
+    # df.sort_values('millis', inplace=True)
 
-    #filtered = filter_outliers_median(1.7, df)
+    # filtered = filter_outliers_median(1.7, df)
 
     df.sort_values('millis', inplace=True)
-    df['millis'] = df.apply(lambda x: round(x.millis/1000), axis=1)
+    df['millis'] = df.apply(lambda x: round(x.millis / 1000), axis=1)
     millis = df['millis'][0]
     # group_millis = file.groupby['millis']
     group_by_node = df.groupby(['node'])
@@ -174,8 +178,6 @@ if __name__ == '__main__':
     convert = group_by_node.filter(lambda x: True)
     group_by_millis = convert.groupby(['millis'])
     group_by_millis_filter = group_by_millis.filter(lambda x: len(pd.unique(x['node'])) >= 3)
-
-    # actual.append(Point(float(row['target_x']), float(row['target_y'])))
 
     for name, group in group_by_millis_filter.groupby(['millis']):
         for index, row in group.iterrows():
@@ -186,27 +188,10 @@ if __name__ == '__main__':
             elif 'x' in row:
                 temp_tril.append(
                     Circle(float(row['x']), float(row['y']),
-                           distance(row)))
+                           rssi_to_distance(row['rssi'])))
+                actual.append((row['target_x'], row['target_y']))
         history.append(Trilateration(temp_tril.copy()))
         temp_tril = []
-
-    # for _, row in df.iterrows():
-    # actual.append(Point(float(row['target_x']), float(row['target_y'])))
-    # print(f'{row["node"]},{row["millis"]},{row["rssi"]}')
-    #    if millis == row['millis']:
-    #        if 'x' in row:
-    #            temp_tril.append(Circle(float(row['x']), float(row['y']), rssi_to_distance(row['rssi'])))
-    #        else:
-    #            if row['node'] in node_location:
-    #                temp_tril.append(
-    #                    Circle(float(node_location[row['node']]['x']), float(node_location[row['node']]['y']),
-    #                           distance(row)))
-    #    else:
-    #        if amountOfDifferentNodes(temp_tril) >= 6:
-    #            history.append(Trilateration(temp_tril.copy()))
-    # break
-    #        temp_tril = []
-    #        millis = row['millis']
 
     solve_history(history)
     _a = static(history, actual)
