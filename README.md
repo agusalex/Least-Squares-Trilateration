@@ -20,10 +20,10 @@ It is distinct from triangulation which has a series of angles to an unknown poi
     from easy_trilateration.graph import *  
       
     if __name__ == '__main__':  
-        arr = [Circle(Point(100, 100), 50),  
-      Circle(Point(100, 50), 50),  
-      Circle(Point(50, 50), 50),  
-      Circle(Point(50, 100), 50)]  
+        arr = [Circle(100, 100, 50),  
+      Circle(100, 50, 50),  
+      Circle(50, 50, 50),  
+      Circle(50, 100, 50)]  
         result, meta = easy_least_squares(arr)  
         create_circle(result, target=True)  
         draw(arr)
